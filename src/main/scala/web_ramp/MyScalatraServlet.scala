@@ -81,7 +81,7 @@ class NetworkSimulatorController(mongoColl: MongoCollection) extends ScalatraSer
 
 
 
-  post("/network-info") {
+  get("/network-info") {
     contentType = formats("json")
     Scenarios.scenarioMap(params("network"))
   }
@@ -90,7 +90,7 @@ class NetworkSimulatorController(mongoColl: MongoCollection) extends ScalatraSer
     parse(string).extract[List[List[Double]]].toIndexedSeq.map{_.toIndexedSeq}
   }
 
-  post("/simulate") {
+  get("/simulate") {
     contentType = formats("json")
     topZoomFactor = params("topZoomFactor").toInt
     val scen = loadScenario(params)

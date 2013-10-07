@@ -1,0 +1,142 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <style>
+            body {
+                padding-top: 50px;
+                padding-bottom: 20px;
+            }
+        </style>
+        <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="css/main.css">
+
+        <script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+    </head>
+    <body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Project name</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Home</a></li>
+          </ul>
+        </div><!--/.navbar-collapse -->
+      </div>
+    </div>
+
+    <div class="container">
+      <!-- Example row of columns -->
+      <div class="row">
+        <div class="col-lg-4">
+            <span class="glyphicon glyphicon-road"></span> Choose network
+            <select id="networks" class="form-control" style="width:40%">
+            </select>
+            <div class="panel-group" id="accordion">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                                Network
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseOne" class="panel-collapse collapse in">
+                        <div class="panel-body" id="scenario">
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+                                Demand
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseTwo" class="panel-collapse collapse">
+                        <div class="panel-body edit-grid" id="demand-content">
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+                                Split Ratios
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseThree" class="panel-collapse collapse">
+                        <div id="turnratios" class="panel-body edit-grid">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+          <h2>Simulation</h2>
+            <div id="simulation">
+                <button id="simulate-btn" class="btn btn-large">Simulate</button>
+                <button id="optimize-btn" class="btn btn-large">Optimize</button>
+                <button id="compare-btn" class="btn btn-large">Compare</button>
+            <div id="cost">
+                TTT: <span id="ttt"></span><br/>
+                Mainline: <span id="ml"></span><br/>
+                Queue: <span id="queue"></span>
+            </div>
+            <h3>Density</h3>
+            <div id="density" class="sim">
+            </div>
+            <h3>Queue</h3>
+            <div id="queue-graph" class="sim">
+            </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+          <h2>Controls</h2>
+            <form role="form">
+                <div class="form-group">
+                    <label for="nIterations"># Iterations</label>
+                    <input type="textInput" class="form-control" id="nIterations" value="15">
+                    <label for="nRestarts"># Restarts</label>
+                    <input type="textInput" class="form-control" id="nRestarts" value="15">
+                    <label for="topZoomFactor">Top Zoom Factor</label>
+                    <input type="textInput" class="form-control" id="topZoomFactor" value="30">
+                    <label for="optimizer">Optimizer</label>
+                    <select id="optimizer" class="form-control">
+                    </select>
+                    <label for="goal">Goal</label>
+                    <select id="goal" class="form-control">
+                    </select>
+                </div>
+            </form>
+      </div>
+
+      <hr>
+
+      <footer>
+        <p>&copy; Jdr 2013</p>
+      </footer>
+    </div> <!-- /container -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.js"></script>
+    <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.js"><\/script>')</script>
+        <script src="http://d3lp1msu2r81bx.cloudfront.net/kjs/js/lib/kinetic-v4.7.2.min.js"></script>
+
+        <script src="js/vendor/bootstrap.min.js"></script>
+        <script src="js/vendor/editablegrid-2.0.1.js"></script>
+        <script src="js/main.js"></script>
+    </body>
+</html>

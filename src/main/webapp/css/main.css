@@ -1,0 +1,18 @@
+
+
+/* ==========================================================================
+   Author's custom styles
+   ========================================================================== */
+
+
+
+			a { color: #548dc4; text-decoration: none; }
+			a:hover { text-decoration: underline; }
+			table.grid { border-collapse: collapse; border: 1px solid #CCB; width: 100%; }
+			table.grid td, table.grid th { padding: 5px; border: 1px solid #E0E0E0; }
+			table.grid th { background: #E5E5E5; text-align: left; }
+			input.invalid { background: red; color: #FDFDFD; }
+
+.container {
+
+}

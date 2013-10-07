@@ -38,7 +38,7 @@ var scenario
 
     function getNetwork() {
     jsonCall("network-info", function(data) {
-                        scenario = scenario;
+                        scenario = data;
                         loadScenario();
     });
     }
@@ -89,7 +89,7 @@ var scenario
 
     function setupListeners() {
         $("#networks").change(function (a, b) {
-            network = $('option:selected', a.target).attr('id');
+            network = $('option:selected', a.target).val()
             getNetwork();
         });
         $("button#simulate-btn").click(simulate);
@@ -227,7 +227,7 @@ var scenario
     function loadScenario() {
         var div = $("#scenario");
         div.empty();
-        var fw = scenario.scenario.fw;
+        var fw = scenario.fw;
         var fwDiv = $("<div>");
         div.append(fwDiv);
         fwDiv.attr("id", "freeway");

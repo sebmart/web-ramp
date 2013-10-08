@@ -44,6 +44,9 @@
             <span class="glyphicon glyphicon-road"></span> Choose network
             <select id="networks" class="form-control" style="width:40%">
             </select>
+            <label class="checkbox">
+                <input id="edit" type="checkbox"> Edit
+            </label>
             <div class="panel-group" id="accordion">
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -92,6 +95,7 @@
                 <button id="simulate-btn" class="btn btn-large">Simulate</button>
                 <button id="optimize-btn" class="btn btn-large">Optimize</button>
                 <button id="compare-btn" class="btn btn-large">Compare</button>
+                <button id="mpc-btn" class="btn btn-large">MPC</button>
             <div id="cost">
                 TTT: <span id="ttt"></span><br/>
                 Mainline: <span id="ml"></span><br/>
@@ -110,11 +114,17 @@
             <form role="form">
                 <div class="form-group">
                     <label for="nIterations"># Iterations</label>
-                    <input type="textInput" class="form-control" id="nIterations" value="15">
+                    <input type="textInput" class="form-control" id="nIterations" value="30">
                     <label for="nRestarts"># Restarts</label>
                     <input type="textInput" class="form-control" id="nRestarts" value="15">
                     <label for="topZoomFactor">Top Zoom Factor</label>
-                    <input type="textInput" class="form-control" id="topZoomFactor" value="30">
+                    <input type="textInput" class="form-control" id="topZoomFactor" value="100">
+                    <label for="noiseFactor">Noise Factor</label>
+                    <input type="textInput" class="form-control" id="noiseFactor" value=".2">
+                    <label for="tHorizon">t Horizon</label>
+                    <input type="textInput" class="form-control" id="tHorizon" value="30">
+                    <label for="tUpdate">t Update</label>
+                    <input type="textInput" class="form-control" id="tUpdate" value="30">
                     <label for="optimizer">Optimizer</label>
                     <select id="optimizer" class="form-control">
                     </select>

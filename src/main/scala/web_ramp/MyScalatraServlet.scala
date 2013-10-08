@@ -53,14 +53,18 @@ class NetworkSimulatorController(mongoColl: MongoCollection) extends ScalatraSer
 
   def loadScenario(params: scalatra.Params) = {
     val oldScen = Scenarios.scenarioMap(params("network"))
-    val fw = createFreeway(oldScen.fw, parse2dArray(params("freeway")))
-    val policyParams = oldScen.policyParams
-    val ic = oldScen.simParams.ic
-    val demand = parse2dArray(params("demand"))
-    val splits = parse2dArray(params("splits"))
-    val bc = BoundaryConditions(demand, splits)
-    val simParams = SimulationParameters(bc, ic)
-    FreewayScenario(fw, simParams, policyParams)
+    if (!params("edit").toBoolean) {
+      oldScen
+    } else {
+      val fw = createFreeway(oldScen.fw, parse2dArray(params("freeway")))
+      val policyParams = oldScen.policyParams
+      val ic = oldScen.simParams.ic
+      val demand = parse2dArray(params("demand"))
+      val splits = parse2dArray(params("splits"))
+      val bc = BoundaryConditions(demand, splits)
+      val simParams = SimulationParameters(bc, ic)
+      FreewayScenario(fw, simParams, policyParams)
+    }
   }
 
   def createFreeway(oldFw: Freeway, array: IndexedSeq[IndexedSeq[Double]]) = {
@@ -104,6 +108,13 @@ class NetworkSimulatorController(mongoColl: MongoCollection) extends ScalatraSer
     simulationSummary(optimalSim(scen, params), scen, topZoomFactor)
   }
 
+  get("/mpc") {
+    contentType = formats("json")
+    val scen = loadScenario(params)
+    topZoomFactor = params("topZoomFactor").toInt
+    simulationSummary(mpcSim(scen, params), scen, topZoomFactor)
+  }
+
   def uncontrolledSim(scen: FreewayScenario) = {
     val sim = new BufferCtmSimulator(scen)
     val control = AdjointRampMetering.noControl(scen)
@@ -113,6 +124,17 @@ class NetworkSimulatorController(mongoColl: MongoCollection) extends ScalatraSer
   def optimalSim(scen: FreewayScenario, params: scalatra.Params) = {
     val adjoint = optimizer(scen, params)
     new BufferCtmSimulator(scen).simulate(adjoint.givePolicy(scen.simParams, scen.policyParams).flatten)
+  }
+
+  def mpcSim(scen: FreewayScenario, params: scalatra.Params) = {
+    Adjoint.optimizer = Scenarios.optimizerMap(params("optimizer"))()
+    val newIters = params("nIters").toInt
+    Adjoint.maxIter = newIters
+    StandardOptimizer.maxEvaluations = newIters
+    MultiStartOptimizer.nStarts = params("nRestarts").toInt
+    val mpcParams = ModelPredictiveControlParams(params("tHorizon").toInt, params("tUpdate").toInt, params("noiseFactor").toDouble)
+    val mpc = new ModelPredictiveControl(scen, new AdjointRampMetering(scen.fw), mpcParams)
+    mpc.simulation
   }
 
   def optimizer(scen: FreewayScenario, params: scalatra.Params) = {

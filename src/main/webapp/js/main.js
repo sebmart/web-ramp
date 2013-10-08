@@ -44,17 +44,38 @@ var scenario
     }
 
     function dataShip() {
-        return {
+        var obj = {
             network: network,
             nRestarts: getNRestarts(),
+            edit: isEdit(),
             nIters: getNIters(),
             topZoomFactor: getTopZoomFactor(),
             optimizer: getOptimizer(),
             goal: getGoal(),
-            demand: getDemand(),
-            splits: getSplits(),
-            freeway: getFreeway()
+            noiseFactor: getNoiseFactor(),
+            tHorizon: getTHorizon(),
+            tUpdate: getTUpdate()
         };
+        if (isEdit()) {
+        $.extend(obj, {demand: getDemand(),splits: getSplits(),freeway: getFreeway()});
+        }
+        return obj;
+    }
+
+    function isEdit() {
+        return $("#edit").is(":checked");
+    }
+
+    function getNoiseFactor() {
+        return parseFloat($("#noiseFactor").val());
+    }
+
+    function getTHorizon() {
+        return parseInt($("#tHorizon").val());
+    }
+
+    function getTUpdate() {
+        return parseInt($("#tUpdate").val());
     }
 
     function getFreeway() {
@@ -95,6 +116,7 @@ var scenario
         $("button#simulate-btn").click(simulate);
         $("button#optimize-btn").click(optimize);
         $("button#compare-btn").click(compare);
+        $("button#mpc-btn").click(mpc);
     }
 
     function drawGraph(divName, density, colorFn) {
@@ -149,13 +171,6 @@ var scenario
         return parseInt($("#topZoomFactor").val());
     }
 
-    function optimize() {
-        jsonCall("optimize", function (sim) {
-            simulation = sim;
-            loadSimulation();
-        });
-    }
-
     function compare() {
         jsonCall("compare", function(diff) {
                 $(".sim").empty();
@@ -165,11 +180,20 @@ var scenario
         });
     }
 
+     function newSim(sim) {
+        simulation = sim;
+        loadSimulation();
+     }
+
+    function optimize() {
+        jsonCall("optimize", newSim);
+    }
+
+    function mpc() {
+        jsonCall("mpc", newSim);
+    }
     function simulate() {
-        jsonCall("simulate", function (sim) {
-            simulation = sim;
-            loadSimulation();
-        });
+        jsonCall("simulate", newSim);
     }
 
     function loadSimulation() {

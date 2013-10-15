@@ -21,8 +21,9 @@ object WebRampBuild extends Build {
       version := Version,
       scalaVersion := ScalaVersion,
       resolvers ++= Seq(
-        Classpaths.typesafeReleases
-      ),
+        Classpaths.typesafeReleases,
+        "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository"
+        ),
       libraryDependencies ++= Seq(
         "edu.berkeley.path" %% "ramp-metering" % "0.1-SNAPSHOT",
         "org.scalatra" %% "scalatra-json" % "2.2.1",

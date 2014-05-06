@@ -1,8 +1,6 @@
 package web_ramp
 
 import org.scalatra._
-import edu.berkeley.path.ramp_metering.io.LoadScenario
-import edu.berkeley.path.ramp_metering._
 import web_ramp.Scenarios.CostSummary
 import org.scalatra
 import com.mongodb.casbah.commons.MongoDBObject
@@ -11,11 +9,14 @@ import com.novus.salat._
 import com.mongodb.casbah.Imports._
 import org.json4s._
 import org.scalatra.json._
+import edu.berkeley.path.ramp_metering._
+import edu.berkeley.path.ramp_metering.io._
+import edu.berkeley.path.ramp_metering.DifferentiableObjective._
 
 case class DBScenario(scenario: FreewayScenario, name: String)
 
 object Scenarios {
-  val dir = "/Users/jdr/Documents/github/ramp-metering/data/networks/"
+  val dir = "data/networks/"
   val nameMap = Map("small" -> "samitha1onramp", "big" -> "2On2Off", "I15" -> "I15")
   val scenarioMap = nameMap.map {
     case (k, v) => k -> LoadScenario.loadScenario("%s/%s.json" format(dir, v))
@@ -23,18 +24,9 @@ object Scenarios {
 
   val optimizerMap = Map("ipopt" -> (() => new IpOptAdjointOptimizer), "multistart" -> (() => new MultiStartOptimizer(() => new Rprop)))
 
-  class CritMetering(fw: Freeway) extends AdjointRampMetering(fw) {
-    override def givePolicy(simParams: SimulationParameters, parameters: PolicyParameters): Array[Array[Double]] = {
-      val scen = new FreewayScenario(freeway, simParams, parameters)
-      val adjoint = new RampMeteringAdjointCrit(scen)
-      adjoint.optimizer = optimizer
-      adjoint.solve(AdjointRampMetering.noControl(scen)).grouped(freeway.nOnramps - 1).toArray
-    }
-  }
-
   case class CostSummary(ttt: Double, tMainline: Double, tQueue: Double)
 
-  val goalMap = Map("ttt" -> ((fw: Freeway) => new AdjointRampMetering(fw)), "crit" -> ((fw: Freeway) => new CritMetering(fw)))
+  val goalMap = Map("ttt" -> ((s: FreewayScenario) => new TotalTravelTimeObjective(s)), "crit" -> ((s: FreewayScenario) => new CriticalDensityObjective(s)))
 }
 
 class NetworkSimulatorController(mongoColl: MongoCollection) extends ScalatraServlet with JacksonJsonSupport {
@@ -121,33 +113,33 @@ class NetworkSimulatorController(mongoColl: MongoCollection) extends ScalatraSer
 
   def uncontrolledSim(scen: FreewayScenario) = {
     val sim = new BufferCtmSimulator(scen)
-    val control = AdjointRampMetering.noControl(scen)
+    val control = FreewaySimulator.noControl(scen)
     sim.simulate(control)
   }
 
   def optimalSim(scen: FreewayScenario, params: scalatra.Params) = {
     val adjoint = optimizer(scen, params)
-    new BufferCtmSimulator(scen).simulate(adjoint.givePolicy(scen.simParams, scen.policyParams).flatten)
+    new BufferCtmSimulator(scen).simulate(adjoint.givePolicy().flatten)
   }
 
   def mpcSim(scen: FreewayScenario, params: scalatra.Params) = {
     Adjoint.optimizer = Scenarios.optimizerMap(params("optimizer"))()
     val newIters = params("nIters").toInt
-    Adjoint.maxIter = newIters
     StandardOptimizer.maxEvaluations = newIters
     MultiStartOptimizer.nStarts = params("nRestarts").toInt
     val mpcParams = ModelPredictiveControlParams(params("tHorizon").toInt, params("tUpdate").toInt, params("noiseFactor").toDouble)
-    val mpc = new ModelPredictiveControl(scen, new AdjointRampMetering(scen.fw), mpcParams)
+    val mpc = new ModelPredictiveControl(scen, new AdjointRampMetering(scen), mpcParams)
     mpc.simulation
   }
 
   def optimizer(scen: FreewayScenario, params: scalatra.Params) = {
     Adjoint.optimizer = Scenarios.optimizerMap(params("optimizer"))()
     val newIters = params("nIters").toInt
-    Adjoint.maxIter = newIters
     StandardOptimizer.maxEvaluations = newIters
     MultiStartOptimizer.nStarts = params("nRestarts").toInt
-    Scenarios.goalMap(params("goal"))(scen.fw)
+    val metering = new AdjointRampMetering(scen)
+    metering.adjoint.diffObjective = Scenarios.goalMap(params("goal"))(scen)
+    metering
   }
 
 

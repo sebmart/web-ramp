@@ -26,7 +26,9 @@ object Scenarios {
 
   case class CostSummary(ttt: Double, tMainline: Double, tQueue: Double)
 
-  val goalMap = Map("ttt" -> ((s: FreewayScenario) => new TotalTravelTimeObjective(s)), "crit" -> ((s: FreewayScenario) => new CriticalDensityObjective(s)))
+  val goalMap = Map("ttt" -> ((s: FreewayScenario) => new TotalTravelTimeObjective(s)), "crit" -> ((s: FreewayScenario) => new CriticalDensityObjective(s)),
+                    "minHalf" -> ((s: FreewayScenario) => new MinHalfTTT(s)), "maxHalf" -> ((s: FreewayScenario) => new MaxHalf2TTT(s)),
+                    "minMaxHalf" ->((s: FreewayScenario) => new MinHalfTTT(s).compose(new MaxHalf2TTT(s))))
 }
 
 class NetworkSimulatorController(mongoColl: MongoCollection) extends ScalatraServlet with JacksonJsonSupport {

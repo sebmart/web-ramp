@@ -25,7 +25,7 @@ object WebRampBuild extends Build {
         "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository"
         ),
       libraryDependencies ++= Seq(
-        "edu.berkeley.path" % "ramp-metering" % "0.1-SNAPSHOT",
+        "edu.berkeley.path" % "ramp-metering" % "0.101-SNAPSHOT",
         "org.scalatra" %% "scalatra-json" % "2.2.1",
         "org.json4s"   %% "json4s-jackson" % "3.2.4",
         "org.scalatra" %% "scalatra" % ScalatraVersion,

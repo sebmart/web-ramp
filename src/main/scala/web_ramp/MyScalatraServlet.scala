@@ -46,6 +46,10 @@ class NetworkSimulatorController(mongoColl: MongoCollection) extends ScalatraSer
   before() {
   }
 
+  error {
+    case e => println("shit" + e.printStackTrace())
+  }
+
 
   def simulationSummary(sim: SimulationOutput, scen: FreewayScenario, zoom: Int) = {
     Map("colorGraph" -> new SimulationGrapher(sim, scen, zoom).output, "costSummary" -> CostSummary(FreewaySimulator.totalTravelTime(scen.fw, sim, scen.policyParams.deltaTimeSeconds), FreewaySimulator.totalDensities(scen.fw, sim, scen.policyParams.deltaTimeSeconds), FreewaySimulator.totalQueues(scen.fw, sim, scen.policyParams.deltaTimeSeconds)))
@@ -170,4 +174,5 @@ class NetworkSimulatorController(mongoColl: MongoCollection) extends ScalatraSer
   // Sets up automatic case class to JSON output serialization, required by
   // the JValueResult trait.
   protected implicit val jsonFormats: Formats = DefaultFormats
+
 }

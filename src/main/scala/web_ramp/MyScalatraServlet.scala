@@ -17,7 +17,7 @@ case class DBScenario(scenario: FreewayScenario, name: String)
 
 object Scenarios {
   val dir = "data/networks/"
-  val nameMap = Map("small" -> "samitha1onramp", "big" -> "2On2Off", "I15" -> "I15")
+  val nameMap = Map("small" -> "samitha1onramp", "big" -> "2On2Off", "I15" -> "I15", "half" -> "half")
   val scenarioMap = nameMap.map {
     case (k, v) => k -> LoadScenario.loadScenario("%s/%s.json" format(dir, v))
   }.toMap

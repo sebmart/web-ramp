@@ -22,13 +22,14 @@ object Scenarios {
     case (k, v) => k -> LoadScenario.loadScenario("%s/%s.json" format(dir, v))
   }.toMap
 
-  val optimizerMap = Map("ipopt" -> (() => new IpOptAdjointOptimizer), "multistart" -> (() => new MultiStartOptimizer(() => new Rprop)))
+  val optimizerMap = Map("ipopt" -> (() => new IpOptAdjointOptimizer), "multistart" -> (() => new MultiStartOptimizer(() => new Rprop)),
+    "chained" -> (() => new ChainedOptimizer))
 
   case class CostSummary(ttt: Double, tMainline: Double, tQueue: Double)
 
   val goalMap = Map("ttt" -> ((s: FreewayScenario) => new TotalTravelTimeObjective(s)), "crit" -> ((s: FreewayScenario) => new CriticalDensityObjective(s)),
-                    "minHalf" -> ((s: FreewayScenario) => new MinHalfTTT(s)), "maxHalf" -> ((s: FreewayScenario) => new MaxHalf2TTT(s)),
-                    "minMaxHalf" ->((s: FreewayScenario) => new MinHalfTTT(s).compose(new MaxHalf2TTT(s))))
+                    "minHalf1Dens" -> ((s: FreewayScenario) => CustomTTTObjective.minHalf1Dens(s)), "maxHalf" -> ((s: FreewayScenario) => CustomTTTObjective.maxHalf2Dens(s)),
+                    "minMaxHalfDens" ->((s: FreewayScenario) => CustomTTTObjective.minMaxHalfDens(s)))
 }
 
 class NetworkSimulatorController(mongoColl: MongoCollection) extends ScalatraServlet with JacksonJsonSupport {
@@ -41,7 +42,7 @@ class NetworkSimulatorController(mongoColl: MongoCollection) extends ScalatraSer
   }
 
   error {
-    case e => println("shit" + e.printStackTrace())
+    case e => println("sh*t" + e.printStackTrace())
   }
 
 

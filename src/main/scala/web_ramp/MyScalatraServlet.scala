@@ -11,8 +11,8 @@ import org.json4s._
 import org.scalatra.json._
 import edu.berkeley.path.ramp_metering._
 import edu.berkeley.path.ramp_metering.io._
-import edu.berkeley.path.ramp_metering.DifferentiableObjective._
-
+import edu.berkeley.path.ramp_metering.DifferentiableObjective.{CriticalDensityObjective,
+MaxQueueLengthObjective, TotalTravelTimeObjective, CustomTTTObjective}
 case class DBScenario(scenario: FreewayScenario, name: String)
 
 object Scenarios {
@@ -28,8 +28,14 @@ object Scenarios {
   case class CostSummary(ttt: Double, tMainline: Double, tQueue: Double)
 
   val goalMap = Map("ttt" -> ((s: FreewayScenario) => new TotalTravelTimeObjective(s)), "crit" -> ((s: FreewayScenario) => new CriticalDensityObjective(s)),
-                    "minHalf1Dens" -> ((s: FreewayScenario) => CustomTTTObjective.minHalf1Dens(s)), "maxHalf" -> ((s: FreewayScenario) => CustomTTTObjective.maxHalf2Dens(s)),
-                    "minMaxHalfDens" ->((s: FreewayScenario) => CustomTTTObjective.minMaxHalfDens(s)))
+                    "minHalf1Dens" -> ((s: FreewayScenario) => CustomTTTObjective.minHalf1Dens(s)), "maxHalf2Dens" -> ((s: FreewayScenario) => CustomTTTObjective.maxHalf2Dens(s)),
+                    "minMaxHalfDens" ->((s: FreewayScenario) => CustomTTTObjective.minMaxHalfDens(s)),
+                    "Middle Jam" -> ((s: FreewayScenario) => CustomTTTObjective.fixedJam(s,s.fw.nLinks/3,(s.fw.nLinks*2)/3,.5,false)),
+                    "Middle Box.5" -> ((s: FreewayScenario) => CustomTTTObjective.box(s,s.fw.nLinks/3,(s.fw.nLinks*2)/3,s.simParams.numTimesteps/3,(2*s.simParams.numTimesteps)/3,.5,true,false)),
+                    "Middle Box0" -> ((s: FreewayScenario) => CustomTTTObjective.box(s,s.fw.nLinks/3,(s.fw.nLinks*2)/3,s.simParams.numTimesteps/3,(2*s.simParams.numTimesteps)/3,0.,true,false)),
+                    "Middle Box1" -> ((s: FreewayScenario) => CustomTTTObjective.box(s,s.fw.nLinks/3,(s.fw.nLinks*2)/3,s.simParams.numTimesteps/3,(2*s.simParams.numTimesteps)/3,1.,true,false)),
+                    "Middle Box.7" -> ((s: FreewayScenario) => CustomTTTObjective.box(s,s.fw.nLinks/3,(s.fw.nLinks*2)/3,s.simParams.numTimesteps/3,(2*s.simParams.numTimesteps)/3,.7,true,false)),
+                    "Middle Box.3" -> ((s: FreewayScenario) => CustomTTTObjective.box(s,s.fw.nLinks/3,(s.fw.nLinks*2)/3,s.simParams.numTimesteps/3,(2*s.simParams.numTimesteps)/3,.3,true,false)))
 }
 
 class NetworkSimulatorController(mongoColl: MongoCollection) extends ScalatraServlet with JacksonJsonSupport {
